@@ -1742,6 +1742,7 @@ if with_clc
   llvm_optional_modules += ['all-targets', 'windowsdriver', 'frontendhlsl', 'frontenddriver']
 endif
 draw_with_llvm = get_option('draw-use-llvm')
+llvm_with_orcjit = get_option('llvm-orcjit')
 if draw_with_llvm
   llvm_modules += 'native'
   # lto is needded with LLVM>=15, but we don't know what LLVM verrsion we are using yet
@@ -1750,6 +1751,8 @@ endif
 
 if with_amd_vk or with_gallium_radeonsi or with_clc
   _llvm_version = '>= 15.0.0'
+elif with_intel_clc or llvm_with_orcjit
+  _llvm_version = '>= 13.0.0'
 elif with_gallium_opencl
   _llvm_version = '>= 11.0.0'
 else
@@ -1783,6 +1786,10 @@ endif
 if with_llvm
   pre_args += '-DMESA_LLVM_VERSION_STRING="@0@"'.format(dep_llvm.version())
   pre_args += '-DLLVM_IS_SHARED=@0@'.format(_shared_llvm.to_int())
+
+  if draw_with_llvm and llvm_with_orcjit
+    pre_args += '-DGALLIVM_USE_ORCJIT=1'
+  endif
 
   if with_swrast_vk and not draw_with_llvm
     error('Lavapipe requires LLVM draw support.')
