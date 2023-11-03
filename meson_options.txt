@@ -683,3 +683,10 @@ option(
                 'the default driconf file is hardcoded into Mesa. ' +
                 'Requires expat.'
 )
+
+option (
+  'llvm-orcjit',
+  type : 'boolean',
+  value : false,
+  description: 'Build llvmpipe with LLVM ORCJIT support.'
+)
