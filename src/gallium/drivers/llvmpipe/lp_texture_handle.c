@@ -216,15 +216,27 @@ get_llvm_context(struct llvmpipe_context *ctx)
    return matrix->context;
 }
 
+#if GALLIVM_USE_ORCJIT == 1
+static void *
+compile_function(struct llvmpipe_context *ctx, struct gallivm_state *gallivm, LLVMValueRef function, const char *func_name,
+                 bool needs_caching,
+                 uint8_t cache_key[SHA1_DIGEST_LENGTH])
+{
+#else
 static void *
 compile_function(struct llvmpipe_context *ctx, struct gallivm_state *gallivm, LLVMValueRef function,
                  bool needs_caching,
                  uint8_t cache_key[SHA1_DIGEST_LENGTH])
 {
+#endif
    gallivm_verify_function(gallivm, function);
    gallivm_compile_module(gallivm);
 
+#if GALLIVM_USE_ORCJIT == 1
+   void *function_ptr = func_to_pointer(gallivm_jit_function(gallivm, func_name));
+#else
    void *function_ptr = func_to_pointer(gallivm_jit_function(gallivm, function));
+#endif
 
    if (needs_caching)
       lp_disk_cache_insert_shader(llvmpipe_screen(ctx->pipe.screen), gallivm->cache, cache_key);
@@ -352,7 +364,11 @@ compile_image_function(struct llvmpipe_context *ctx, struct lp_static_texture_st
 
    free(image_soa);
 
+#if GALLIVM_USE_ORCJIT == 1
+   return compile_function(ctx, gallivm, function, "image", needs_caching, cache_key);
+#else
    return compile_function(ctx, gallivm, function, needs_caching, cache_key);
+#endif
 }
 
 static void *
@@ -500,7 +516,11 @@ compile_sample_function(struct llvmpipe_context *ctx, struct lp_static_texture_s
 
    free(sampler_soa);
 
+#if GALLIVM_USE_ORCJIT == 1
+   return compile_function(ctx, gallivm, function, "sample", needs_caching, cache_key);
+#else
    return compile_function(ctx, gallivm, function, needs_caching, cache_key);
+#endif
 }
 
 static uint64_t
@@ -728,7 +748,11 @@ compile_size_function(struct llvmpipe_context *ctx, struct lp_static_texture_sta
 
    free(sampler_soa);
 
+#if GALLIVM_USE_ORCJIT == 1
+   return compile_function(ctx, gallivm, function, "size", needs_caching, cache_key);
+#else
    return compile_function(ctx, gallivm, function, needs_caching, cache_key);
+#endif
 }
 
 static void
