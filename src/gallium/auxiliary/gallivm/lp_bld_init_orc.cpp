@@ -48,7 +48,7 @@
 /* conflict with ObjectLinkingLayer.h */
 #include "util/u_memory.h"
 
-#if DETECT_ARCH_RISCV64 == 1 || DETECT_ARCH_RISCV32 == 1 || (defined(_WIN32) && LLVM_VERSION_MAJOR >= 15)
+#if DETECT_ARCH_RISCV64 == 1 || DETECT_ARCH_RISCV32 == 1 || DETECT_ARCH_LOONGARCH64 == 1 || (defined(_WIN32) && LLVM_VERSION_MAJOR >= 15)
 /* use ObjectLinkingLayer (JITLINK backend) */
 #define USE_JITLINK
 #endif
@@ -562,6 +562,14 @@ llvm::orc::JITTargetMachineBuilder LPJit::create_jtdb() {
 #endif
 #endif
 
+#if DETECT_ARCH_LOONGARCH64 == 1
+#if defined(__loongarch_lp64) && defined(__loongarch_double_float)
+   options.MCOptions.ABIName = "lp64d";
+#else
+#error "GALLIVM: unknown target loongarch float abi"
+#endif
+#endif
+
    JTMB.setOptions(options);
 
    std::vector<std::string> MAttrs;
@@ -666,6 +674,22 @@ llvm::orc::JITTargetMachineBuilder LPJit::create_jtdb() {
     * riscv64gc
     */
    MAttrs = {"+m","+c","+a","+d","+f"};
+#endif
+
+#if DETECT_ARCH_LOONGARCH64 == 1
+   /*
+    * TODO: Implement util_get_cpu_caps()
+    *
+    * No FPU-less LoongArch64 systems are ever shipped yet, and LP64D is
+    * the default ABI, so FPU is enabled here.
+    *
+    * The Software development convention defaults to have "128-bit
+    * vector", so LSX is enabled here, see
+    * https://github.com/loongson/la-softdev-convention/releases/download/v0.1/la-softdev-convention.pdf
+    *
+    * FIXME: lsx is disabled here now because it's broken on LLVM17.
+    */
+   MAttrs = {"+f","+d","-lsx"};
 #endif
 
    JTMB.addFeatures(MAttrs);
