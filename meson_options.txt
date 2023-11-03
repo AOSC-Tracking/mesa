@@ -690,3 +690,10 @@ option (
   value : 'disabled',
   description: 'Enable Intel Xe KMD support.'
 )
+
+option (
+  'llvm-orcjit',
+  type : 'boolean',
+  value : false,
+  description: 'Build llvmpipe with LLVM ORCJIT support.'
+)
