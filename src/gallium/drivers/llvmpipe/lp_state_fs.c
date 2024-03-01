@@ -3180,8 +3180,11 @@ generate_fragment(struct llvmpipe_context *lp,
    blend_vec_type = lp_build_vec_type(gallivm, blend_type);
 
    char func_name[64];
-   snprintf(func_name, sizeof(func_name), "fs_variant_%s",
-            partial_mask ? "partial" : "whole");
+   if (partial_mask)
+      snprintf(func_name, sizeof(func_name), "fs_variant_partial%u",
+               partial_mask);
+   else
+      strcpy(func_name, "fs_variant_whole");
 
    arg_types[0] = variant->jit_context_ptr_type;       /* context */
    arg_types[1] = variant->jit_resources_ptr_type;       /* context */
