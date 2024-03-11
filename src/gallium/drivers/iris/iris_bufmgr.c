@@ -96,7 +96,7 @@
  * included here.
  */
 #ifndef PAGE_SIZE
-#define PAGE_SIZE 4096
+#define PAGE_SIZE 16384
 #endif
 
 #define WARN_ONCE(cond, fmt...) do {                            \
