@@ -96,7 +96,15 @@
  * included here.
  */
 #ifndef PAGE_SIZE
+/* 16KiB is the most commonly found kernel page size on LoongArch
+ * platforms. Limit this to LP64 platforms for now, as this is the only
+ * one that we support.
+ */
+#if defined(__loongarch_lp64)
+#define PAGE_SIZE 16384
+#else
 #define PAGE_SIZE 4096
+#endif
 #endif
 
 #define WARN_ONCE(cond, fmt...) do {                            \
