@@ -21,17 +21,10 @@
 inc_gbm = include_directories('.', 'main', 'backends/dri')
 
 files_gbm = files(
-  'main/backend.c',
-  'main/backend.h',
-  'main/gbm.c',
-  'main/gbm.h',
-  'main/gbmint.h',
+  'main/gbm_backend_abi.h',
 )
 deps_gbm = []
-args_gbm = [
-  '-DDEFAULT_BACKENDS_PATH="@0@"'.format(gbm_backends_path),
-]
-deps_gbm = []
+args_gbm = []
 incs_gbm = [
   include_directories('main'), inc_include, inc_src, inc_loader,
 ]
@@ -45,8 +38,8 @@ if with_platform_wayland
   incs_gbm += inc_wayland_drm
 endif
 
-libgbm = shared_library(
-  'gbm',
+amber_gbm = shared_library(
+  'amber_gbm',
   files_gbm,
   include_directories : incs_gbm,
   c_args : [args_gbm],
@@ -54,36 +47,8 @@ libgbm = shared_library(
   link_with : libloader,
   dependencies : [deps_gbm, dep_dl, dep_thread, idep_mesautil, idep_xmlconfig],
   gnu_symbol_visibility : 'hidden',
-  version : '1.0.0',
   install : true,
+  install_dir : gbm_backends_path,
+  name_prefix : '',
+  name_suffix : 'so',
 )
-
-if with_tests
-  abi_check = executable('gbm_abi_check', 'main/gbm_abi_check.c')
-  test('gbm-abi-check', abi_check, suite : ['gbm'])
-endif
-
-install_headers('main/gbm.h')
-
-pkg.generate(
-  name : 'gbm',
-  filebase : 'gbm',
-  description : 'Mesa gbm library',
-  version : meson.project_version(),
-  libraries : libgbm,
-  libraries_private : gbm_priv_libs,
-  variables : ['gbmbackendspath=' + gbm_backends_path],
-)
-
-if with_symbols_check
-  test(
-    'gbm-symbols-check',
-    symbols_check,
-    args : [
-      '--lib', libgbm,
-      '--symbols-file', files('gbm-symbols.txt'),
-      symbols_check_args,
-    ],
-    suite : ['gbm'],
-  )
-endif

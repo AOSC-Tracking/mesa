@@ -57,6 +57,8 @@
 #include "wayland-drm.h"
 #endif
 
+static const struct gbm_core *core;
+
 static __DRIimage *
 dri_lookup_egl_image(__DRIscreen *screen, void *image, void *data)
 {
@@ -605,7 +607,7 @@ static const struct gbm_dri_visual gbm_dri_visuals_table[] = {
 static int
 gbm_format_to_dri_format(uint32_t gbm_format)
 {
-   gbm_format = gbm_core.v0.format_canonicalize(gbm_format);
+   gbm_format = core->v0.format_canonicalize(gbm_format);
    for (size_t i = 0; i < ARRAY_SIZE(gbm_dri_visuals_table); i++) {
       if (gbm_dri_visuals_table[i].gbm_format == gbm_format)
          return gbm_dri_visuals_table[i].dri_image_format;
@@ -636,7 +638,7 @@ gbm_dri_is_format_supported(struct gbm_device *gbm,
    if ((usage & GBM_BO_USE_CURSOR) && (usage & GBM_BO_USE_RENDERING))
       return 0;
 
-   format = gbm_core.v0.format_canonicalize(format);
+   format = core->v0.format_canonicalize(format);
    if (gbm_format_to_dri_format(format) == 0)
       return 0;
 
@@ -673,7 +675,7 @@ gbm_dri_get_format_modifier_plane_count(struct gbm_device *gbm,
        !dri->image->queryDmaBufFormatModifierAttribs)
       return -1;
 
-   format = gbm_core.v0.format_canonicalize(format);
+   format = core->v0.format_canonicalize(format);
    if (gbm_format_to_dri_format(format) == 0)
       return -1;
 
@@ -1021,7 +1023,7 @@ gbm_dri_bo_import(struct gbm_device *gbm,
       /* GBM's GBM_FORMAT_* tokens are a strict superset of the DRI FourCC
        * tokens accepted by createImageFromFds, except for not supporting
        * the sARGB format. */
-      fourcc = gbm_core.v0.format_canonicalize(fd_data->format);
+      fourcc = core->v0.format_canonicalize(fd_data->format);
 
       image = dri->image->createImageFromFds(dri->screen,
                                              fd_data->width,
@@ -1054,7 +1056,7 @@ gbm_dri_bo_import(struct gbm_device *gbm,
       /* GBM's GBM_FORMAT_* tokens are a strict superset of the DRI FourCC
        * tokens accepted by createImageFromDmaBufs2, except for not supporting
        * the sARGB format. */
-      fourcc = gbm_core.v0.format_canonicalize(fd_data->format);
+      fourcc = core->v0.format_canonicalize(fd_data->format);
 
       image = dri->image->createImageFromDmaBufs2(dri->screen, fd_data->width,
                                                   fd_data->height, fourcc,
@@ -1185,7 +1187,7 @@ gbm_dri_bo_create(struct gbm_device *gbm,
    int dri_format;
    unsigned dri_use = 0;
 
-   format = gbm_core.v0.format_canonicalize(format);
+   format = core->v0.format_canonicalize(format);
 
    if (usage & GBM_BO_USE_WRITE || dri->image == NULL)
       return create_dumb(gbm, width, height, format, usage);
@@ -1346,7 +1348,7 @@ gbm_dri_surface_create(struct gbm_device *gbm,
    surf->base.gbm = gbm;
    surf->base.v0.width = width;
    surf->base.v0.height = height;
-   surf->base.v0.format = gbm_core.v0.format_canonicalize(format);
+   surf->base.v0.format = core->v0.format_canonicalize(format);
    surf->base.v0.flags = flags;
    if (!modifiers) {
       assert(!count);
@@ -1405,13 +1407,6 @@ dri_device_create(int fd, uint32_t gbm_backend_version)
    int ret;
    bool force_sw;
 
-   /*
-    * Since the DRI backend is built-in to the loader, the loader ABI version is
-    * guaranteed to match this backend's ABI version
-    */
-   assert(gbm_core.v0.core_version == GBM_BACKEND_ABI_VERSION);
-   assert(gbm_core.v0.core_version == gbm_backend_version);
-
    dri = calloc(1, sizeof *dri);
    if (!dri)
       return NULL;
@@ -1438,7 +1433,7 @@ dri_device_create(int fd, uint32_t gbm_backend_version)
    dri->base.v0.surface_create = gbm_dri_surface_create;
    dri->base.v0.surface_destroy = gbm_dri_surface_destroy;
 
-   dri->base.v0.name = "drm";
+   dri->base.v0.name = "amber";
 
    dri->visual_table = gbm_dri_visuals_table;
    dri->num_visuals = ARRAY_SIZE(gbm_dri_visuals_table);
@@ -1467,6 +1462,15 @@ err_dri:
 
 struct gbm_backend gbm_dri_backend = {
    .v0.backend_version = GBM_BACKEND_ABI_VERSION,
-   .v0.backend_name = "dri",
+   .v0.backend_name = "amber",
    .v0.create_device = dri_device_create,
 };
+
+GBM_EXPORT struct gbm_backend*
+GBM_GET_BACKEND_PROC(const struct gbm_core *gbm_core);
+	
+GBM_EXPORT struct gbm_backend*
+GBM_GET_BACKEND_PROC(const struct gbm_core *gbm_core) {
+    core = gbm_core;
+    return &gbm_dri_backend;
+}

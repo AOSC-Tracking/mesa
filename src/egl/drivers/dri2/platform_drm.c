@@ -715,7 +715,7 @@ dri2_initialize_drm(_EGLDisplay *disp)
    }
    dri2_dpy->gbm_dri = gbm_dri_device(gbm);
 
-   if (strcmp(gbm_device_get_backend_name(gbm), "drm") != 0) {
+   if (strcmp(gbm_device_get_backend_name(gbm), "amber") != 0) {
       err = "DRI2: gbm device using incorrect/incompatible backend";
       goto cleanup;
    }
