@@ -303,8 +303,16 @@ llvmpipe_fs_variant_linear_llvm(struct llvmpipe_context *lp,
       }
    }
 
-   if (variant->gallivm->cache->data_size)
+   if (variant->gallivm->cache->data_size) {
+#if GALLIVM_USE_ORCJIT == 1
+      LLVMBasicBlockRef block = LLVMAppendBasicBlockInContext(gallivm->context, function, "entry");
+      LLVMBuilderRef builder = gallivm->builder;
+      assert(builder);
+      LLVMPositionBuilderAtEnd(builder, block);
+      LLVMBuildRetVoid(builder);
+#endif
       return;
+   }
 
    LLVMValueRef context_ptr = LLVMGetParam(function, 0);
    LLVMValueRef x = LLVMGetParam(function, 1);

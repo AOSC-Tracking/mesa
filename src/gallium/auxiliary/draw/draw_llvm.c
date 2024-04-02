@@ -1675,8 +1675,16 @@ draw_llvm_generate(struct draw_llvm *llvm, struct draw_llvm_variant *variant)
       if (LLVMGetTypeKind(arg_types[i]) == LLVMPointerTypeKind)
          lp_add_function_attr(variant_func, i + 1, LP_FUNC_ATTR_NOALIAS);
 
-   if (gallivm->cache && gallivm->cache->data_size)
+   if (gallivm->cache && gallivm->cache->data_size) {
+#if GALLIVM_USE_ORCJIT == 1
+      block = LLVMAppendBasicBlockInContext(gallivm->context, variant_func, "entry");
+      builder = gallivm->builder;
+      assert(builder);
+      LLVMPositionBuilderAtEnd(builder, block);
+      LLVMBuildRetVoid(builder);
+#endif
       return;
+   }
 
    context_ptr               = LLVMGetParam(variant_func, 0);
    resources_ptr             = LLVMGetParam(variant_func, 1);
@@ -2411,8 +2419,17 @@ draw_gs_llvm_generate(struct draw_llvm *llvm,
       if (LLVMGetTypeKind(arg_types[i]) == LLVMPointerTypeKind)
          lp_add_function_attr(variant_func, i + 1, LP_FUNC_ATTR_NOALIAS);
 
-   if (gallivm->cache && gallivm->cache->data_size)
+   if (gallivm->cache && gallivm->cache->data_size) {
+#if GALLIVM_USE_ORCJIT == 1
+      block = LLVMAppendBasicBlockInContext(gallivm->context, variant_func, "entry");
+      builder = gallivm->builder;
+      assert(builder);
+      LLVMPositionBuilderAtEnd(builder, block);
+      LLVMBuildRetVoid(builder);
+#endif
       return;
+   }
+
    context_ptr               = LLVMGetParam(variant_func, 0);
    resources_ptr             = LLVMGetParam(variant_func, 1);
    input_array               = LLVMGetParam(variant_func, 2);
@@ -3018,8 +3035,17 @@ draw_tcs_llvm_generate(struct draw_llvm *llvm,
       }
    }
 
-   if (gallivm->cache && gallivm->cache->data_size)
+   if (gallivm->cache && gallivm->cache->data_size) {
+#if GALLIVM_USE_ORCJIT == 1
+      block = LLVMAppendBasicBlockInContext(gallivm->context, variant_func, "entry");
+      builder = gallivm->builder;
+      assert(builder);
+      LLVMPositionBuilderAtEnd(builder, block);
+      LLVMBuildRetVoid(builder);
+#endif
       return;
+   }
+
    resources_ptr               = LLVMGetParam(variant_func, 0);
    input_array               = LLVMGetParam(variant_func, 1);
    output_array              = LLVMGetParam(variant_func, 2);
@@ -3592,8 +3618,17 @@ draw_tes_llvm_generate(struct draw_llvm *llvm,
       if (LLVMGetTypeKind(arg_types[i]) == LLVMPointerTypeKind)
          lp_add_function_attr(variant_func, i + 1, LP_FUNC_ATTR_NOALIAS);
 
-   if (gallivm->cache && gallivm->cache->data_size)
+   if (gallivm->cache && gallivm->cache->data_size) {
+#if GALLIVM_USE_ORCJIT == 1
+      block = LLVMAppendBasicBlockInContext(gallivm->context, variant_func, "entry");
+      builder = gallivm->builder;
+      assert(builder);
+      LLVMPositionBuilderAtEnd(builder, block);
+      LLVMBuildRetVoid(builder);
+#endif
       return;
+   }
+
    resources_ptr               = LLVMGetParam(variant_func, 0);
    input_array               = LLVMGetParam(variant_func, 1);
    io_ptr                    = LLVMGetParam(variant_func, 2);

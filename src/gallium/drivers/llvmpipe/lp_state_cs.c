@@ -410,8 +410,16 @@ generate_compute(struct llvmpipe_context *lp,
       }
    }
 
-   if (variant->gallivm->cache->data_size)
+   if (variant->gallivm->cache->data_size) {
+#if GALLIVM_USE_ORCJIT == 1
+      block = LLVMAppendBasicBlockInContext(gallivm->context, function, "entry");
+      builder = gallivm->builder;
+      assert(builder);
+      LLVMPositionBuilderAtEnd(builder, block);
+      LLVMBuildRetVoid(builder);
+#endif
       return;
+   }
 
    context_ptr  = LLVMGetParam(function, CS_ARG_CONTEXT);
    resources_ptr  = LLVMGetParam(function, CS_ARG_RESOURCES);
