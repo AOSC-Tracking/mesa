@@ -528,14 +528,14 @@ vk_meta_create_compute_pipeline(struct vk_device *device,
 }
 
 void
-vk_meta_object_list_init(struct vk_meta_object_list *mol)
+vk_object_list_init(struct vk_object_list *mol)
 {
    util_dynarray_init(&mol->arr, NULL);
 }
 
 void
-vk_meta_object_list_reset(struct vk_device *device,
-                          struct vk_meta_object_list *mol)
+vk_object_list_reset(struct vk_device *device,
+                          struct vk_object_list *mol)
 {
    util_dynarray_foreach(&mol->arr, struct vk_object_base *, obj)
       destroy_object(device, *obj);
@@ -544,10 +544,10 @@ vk_meta_object_list_reset(struct vk_device *device,
 }
 
 void
-vk_meta_object_list_finish(struct vk_device *device,
-                           struct vk_meta_object_list *mol)
+vk_object_list_finish(struct vk_device *device,
+                           struct vk_object_list *mol)
 {
-   vk_meta_object_list_reset(device, mol);
+   vk_object_list_reset(device, mol);
    util_dynarray_fini(&mol->arr);
 }
 
@@ -565,7 +565,7 @@ vk_meta_create_buffer(struct vk_command_buffer *cmd,
    if (unlikely(result != VK_SUCCESS))
       return result;
 
-   vk_meta_object_list_add_handle(&cmd->meta_objects,
+   vk_object_list_add_handle(&cmd->meta_objects,
                                   VK_OBJECT_TYPE_BUFFER,
                                   (uint64_t)*buffer_out);
    return VK_SUCCESS;
@@ -585,7 +585,7 @@ vk_meta_create_image_view(struct vk_command_buffer *cmd,
    if (unlikely(result != VK_SUCCESS))
       return result;
 
-   vk_meta_object_list_add_handle(&cmd->meta_objects,
+   vk_object_list_add_handle(&cmd->meta_objects,
                                   VK_OBJECT_TYPE_IMAGE_VIEW,
                                   (uint64_t)*image_view_out);
    return VK_SUCCESS;

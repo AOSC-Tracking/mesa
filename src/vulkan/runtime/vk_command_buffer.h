@@ -127,7 +127,7 @@ struct vk_command_buffer {
    struct vk_cmd_queue cmd_queue;
 
    /** Object list for meta objects */
-   struct vk_meta_object_list meta_objects;
+   struct vk_object_list meta_objects;
 
    /**
     * VK_EXT_debug_utils
