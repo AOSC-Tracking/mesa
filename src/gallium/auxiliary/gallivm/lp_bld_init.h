@@ -34,6 +34,7 @@
 #include "util/u_pointer.h" // for func_pointer
 #include "util/u_cpu_detect.h"
 #include "lp_bld.h"
+#include "lp_bld_passmgr.h"
 #include <llvm-c/ExecutionEngine.h>
 
 #ifdef __cplusplus
@@ -47,12 +48,7 @@ struct gallivm_state
    LLVMModuleRef module;
    LLVMExecutionEngineRef engine;
    LLVMTargetDataRef target;
-#if GALLIVM_USE_NEW_PASS == 0
-   LLVMPassManagerRef passmgr;
-#if GALLIVM_HAVE_CORO == 1
-   LLVMPassManagerRef cgpassmgr;
-#endif
-#endif
+   struct lp_passmgr *passmgr;
    LLVMContextRef context;
    LLVMBuilderRef builder;
    LLVMMCJITMemoryManagerRef memorymgr;
