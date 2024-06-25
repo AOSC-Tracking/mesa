@@ -423,6 +423,13 @@ option(
                 'is included.'
 )
 
+option (
+  'llvm-orcjit',
+  type : 'boolean',
+  value : false,
+  description: 'Build llvmpipe with LLVM ORCJIT support.'
+)
+
 option(
   'valgrind',
   type : 'feature',
