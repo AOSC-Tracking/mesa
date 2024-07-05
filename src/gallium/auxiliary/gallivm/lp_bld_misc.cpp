@@ -414,6 +414,23 @@ lp_build_fill_mattrs(std::vector<std::string> &MAttrs)
     */
    MAttrs = {"+m","+c","+a","+d","+f"};
 #endif
+
+#if DETECT_ARCH_LOONGARCH64 == 1
+   /*
+    * TODO: Implement util_get_cpu_caps()
+    *
+    * No FPU-less LoongArch64 systems are ever shipped yet, and LP64D is
+    * the default ABI, so FPU is enabled here.
+    *
+    * The Software development convention defaults to have "128-bit
+    * vector", so LSX is enabled here, see
+    * https://github.com/loongson/la-softdev-convention/releases/download/v0.1/la-softdev-convention.pdf
+    *
+    * FIXME: lsx is disabled here now because it's broken on LLVM17, need to
+    * test on LLVM18 now.
+    */
+   MAttrs = {"+f","+d","-lsx"};
+#endif
 }
 
 void
