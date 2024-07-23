@@ -276,6 +276,16 @@ struct agx_occupancy {
 struct agx_occupancy agx_occupancy_for_register_count(unsigned halfregs);
 unsigned agx_max_registers_for_occupancy(unsigned occupancy);
 
+static inline void
+agx_disassemble_stdout(void *data, size_t size)
+{
+   FILE *tmp = fopen("/tmp/shader.bin", "wb");
+   fwrite(data, 1, size, tmp);
+   fclose(tmp);
+
+   system("python3 ~/applegpu/disassemble.py /tmp/shader.bin");
+}
+
 static const nir_shader_compiler_options agx_nir_options = {
    .lower_fdiv = true,
    .fuse_ffma16 = true,

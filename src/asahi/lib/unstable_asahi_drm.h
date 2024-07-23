@@ -16,12 +16,7 @@
 extern "C" {
 #endif
 
-/*
- * The UAPI defined in this file MUST NOT BE USED. End users, DO NOT attempt to
- * use upstream Mesa with asahi kernels, it will blow up. Distro packagers, DO
- * NOT patch upstream Mesa to do the same.
- */
-#define DRM_ASAHI_UNSTABLE_UABI_VERSION (0xDEADBEEF)
+#define DRM_ASAHI_UNSTABLE_UABI_VERSION 10011
 
 #define DRM_ASAHI_GET_PARAMS      0x00
 #define DRM_ASAHI_VM_CREATE       0x01
