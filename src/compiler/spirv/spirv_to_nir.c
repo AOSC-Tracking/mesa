@@ -1744,7 +1744,7 @@ validate_image_type_for_sampled_image(struct vtn_builder *b,
          vtn_fail("Starting with SPIR-V 1.6, %s "
                   "must not have a Dim of Buffer.", operand);
       } else {
-         vtn_warn("%s should not have a Dim of Buffer.", operand);
+         //vtn_warn("%s should not have a Dim of Buffer.", operand);
       }
    }
 }

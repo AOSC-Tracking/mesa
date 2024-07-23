@@ -3615,6 +3615,11 @@ agx_compile_function_nir(nir_shader *nir, nir_function_impl *impl,
       }
    }
 
+   if (agx_should_dump(nir, AGX_DBG_SHADERS)) {
+      agx_disassemble_stdout(binary->data + offset, binary->size - offset);
+      fflush(stdout);
+   }
+
    ralloc_free(ctx);
 
    return offset;
@@ -3701,6 +3706,7 @@ agx_preprocess_nir(nir_shader *nir, const nir_shader *libagx)
 
    if (nir->info.stage == MESA_SHADER_FRAGMENT) {
       NIR_PASS(_, nir, agx_nir_lower_frag_sidefx);
+      NIR_PASS(_, nir, nir_lower_is_helper_invocation);
    }
 
    /* Clean up deref gunk after lowering I/O */

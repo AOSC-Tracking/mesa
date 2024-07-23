@@ -1095,9 +1095,6 @@ hk_create_drm_physical_device(struct vk_instance *_instance,
    struct hk_instance *instance = (struct hk_instance *)_instance;
    VkResult result;
 
-   /* Blanket refusal to probe due to unstable UAPI. */
-   return VK_ERROR_INCOMPATIBLE_DRIVER;
-
    if (!(drm_device->available_nodes & (1 << DRM_NODE_RENDER)) ||
        drm_device->bustype != DRM_BUS_PLATFORM)
       return VK_ERROR_INCOMPATIBLE_DRIVER;
