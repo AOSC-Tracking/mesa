@@ -404,6 +404,15 @@ agx_compression_allowed(const struct agx_resource *pres)
       return false;
    }
 
+   /* Workaround for https://github.com/supertuxkart/stk-code/issues/4863
+    *
+    * XXX: Fix upstream or at least driconf, this is terrible.
+    */
+   if (strcmp(util_get_process_name(), "supertuxkart") == 0) {
+      if (pres->base.bind & PIPE_BIND_DEPTH_STENCIL)
+         return false;
+   }
+
    /* Limited to renderable */
    if (pres->base.bind &
        ~(PIPE_BIND_SAMPLER_VIEW | PIPE_BIND_RENDER_TARGET |
@@ -2582,13 +2591,6 @@ agx_screen_create(int fd, struct renderonly *ro,
 {
    struct agx_screen *agx_screen;
    struct pipe_screen *screen;
-
-   /* Refuse to probe. There is no stable UAPI yet. Upstream Mesa cannot be used
-    * yet with Asahi. Do not try. Do not patch out this check. Do not teach
-    * others about patching this check. Do not distribute upstream Mesa with
-    * this check patched out.
-    */
-   return NULL;
 
    agx_screen = rzalloc(NULL, struct agx_screen);
    if (!agx_screen)
