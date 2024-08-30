@@ -237,7 +237,7 @@ int rvid_get_video_param(struct pipe_screen *screen,
 		case PIPE_VIDEO_FORMAT_MPEG4_AVC:
 			return true;
 		case PIPE_VIDEO_FORMAT_VC1:
-			return true;
+			return false;
 		case PIPE_VIDEO_FORMAT_HEVC:
 			return false;
 		case PIPE_VIDEO_FORMAT_JPEG:
