@@ -437,16 +437,9 @@ drilCreateNewScreen(int scrn, int fd,
    const __DRIconfig **configs = init_dri2_configs(fd);
    if (!configs && fd == -1) {
       // otherwise set configs to point to our config list
-      configs = calloc(ARRAY_SIZE(drilConfigs) * 2 + 1, sizeof(void *));
-      int c = 0;
+      configs = calloc(ARRAY_SIZE(drilConfigs) + 1, sizeof(void *));
       for (int i = 0; i < ARRAY_SIZE(drilConfigs); i++) {
-         /* create normal config */
-         configs[c++] = mem_dup(&drilConfigs[i], sizeof(drilConfigs[i]));
-
-         /* create double-buffered config */
-         configs[c] = mem_dup(&drilConfigs[i], sizeof(drilConfigs[i]));
-         struct gl_config *cfg = (void*)configs[c++];
-         cfg->doubleBufferMode = 1;
+         configs[i] = mem_dup(&drilConfigs[i], sizeof(drilConfigs[i]));
       }
    }
 
