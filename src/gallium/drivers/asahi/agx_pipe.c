@@ -2583,13 +2583,6 @@ agx_screen_create(int fd, struct renderonly *ro,
    struct agx_screen *agx_screen;
    struct pipe_screen *screen;
 
-   /* Refuse to probe. There is no stable UAPI yet. Upstream Mesa cannot be used
-    * yet with Asahi. Do not try. Do not patch out this check. Do not teach
-    * others about patching this check. Do not distribute upstream Mesa with
-    * this check patched out.
-    */
-   return NULL;
-
    agx_screen = rzalloc(NULL, struct agx_screen);
    if (!agx_screen)
       return NULL;

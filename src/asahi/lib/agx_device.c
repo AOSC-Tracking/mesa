@@ -521,36 +521,12 @@ agx_open_device(void *memctx, struct agx_device *dev)
    }
    assert(params_size >= sizeof(dev->params));
 
-   /* Refuse to probe. */
    if (dev->params.unstable_uabi_version != DRM_ASAHI_UNSTABLE_UABI_VERSION) {
-      fprintf(
-         stderr,
-         "You are attempting to use upstream Mesa with a downstream kernel!\n"
-         "This WILL NOT work.\n"
-         "The Asahi UABI is unstable and NOT SUPPORTED in upstream Mesa.\n"
-         "UABI related code in upstream Mesa is not for use!\n"
-         "\n"
-         "Do NOT attempt to patch out checks, you WILL break your system.\n"
-         "Do NOT report bugs.\n"
-         "Do NOT ask Mesa developers for support.\n"
-         "Do NOT write guides about how to patch out these checks.\n"
-         "Do NOT package patches to Mesa to bypass this.\n"
-         "\n"
-         "~~~\n"
-         "This is not a place of honor.\n"
-         "No highly esteemed deed is commemorated here.\n"
-         "Nothing valued is here.\n"
-         "\n"
-         "What is here was dangerous and repulsive to us.\n"
-         "This message is a warning about danger.\n"
-         "\n"
-         "The danger is still present, in your time, as it was in ours.\n"
-         "The danger is unleashed only if you substantially disturb this place physically.\n"
-         "This place is best shunned and left uninhabited.\n"
-         "~~~\n"
-         "\n"
-         "THIS IS NOT A BUG. THIS IS YOU DOING SOMETHING BROKEN!\n");
-      abort();
+      fprintf(stderr, "UABI mismatch: Kernel %d, Mesa %d\n",
+              dev->params.unstable_uabi_version,
+              DRM_ASAHI_UNSTABLE_UABI_VERSION);
+      assert(0);
+      return false;
    }
 
    uint64_t incompat =
