@@ -332,7 +332,7 @@ intel_vk_can_rt = host_machine.cpu_family() == 'x86_64' or \
 with_intel_vk_rt = get_option('intel-rt') \
    .disable_auto_if(not with_intel_vk) \
    .disable_if(not intel_vk_can_rt, \
-               error_message: 'Intel Ray Tracing requires 64-bit architectures') \
+               error_message: 'Intel Ray Tracing requires 64-bit x86 and Arm architectures') \
   .allowed()
 
 with_any_intel = [
