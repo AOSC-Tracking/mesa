@@ -1092,6 +1092,8 @@ struct anv_physical_device {
     /** True if we can use timeline semaphores through execbuf */
     bool                                        has_exec_timeline;
 
+    uint64_t                                    page_size;
+
     /** True if we can read the GPU timestamp register
      *
      * When running in a virtual context, the timestamp register is unreadable
